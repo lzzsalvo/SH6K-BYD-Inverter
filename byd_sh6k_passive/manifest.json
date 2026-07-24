@@ -1,0 +1,11 @@
+{
+  "domain": "byd_sh6k_passive",
+  "name": "BYD SH6K Passive Modbus",
+  "codeowners": [],
+  "config_flow": true,
+  "documentation": "https://www.home-assistant.io/integrations/sensor/",
+  "integration_type": "hub",
+  "iot_class": "local_push",
+  "requirements": [],
+  "version": "1.0.1"
+}
