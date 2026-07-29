@@ -1,7 +1,7 @@
 # SH6K-BYD-Inverter
 Custom integration for real-time reading of inverter values
 
-
+[![HACS](https://img.shields/HACS-Custom-orange.svg](https://hacs.xyz/)
 ## Installation
 
 ### HACS
