@@ -1,7 +1,9 @@
 {
   "domain": "byd_sh6k_passive",
   "name": "BYD SH6K Passive",
-  "codeowners": [],
+  "codeowners": [
+    "@lzzsalvo"
+  ],
   "version": "1.0.0",
   "documentation": "https://github.com/lzzsalvo/SH6K-BYD-Inverter",
   "issue_tracker": "https://github.com/lzzsalvo/SH6K-BYD-Inverter/issues",
