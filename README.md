@@ -1,11 +1,6 @@
 # SH6K-BYD-Inverter
 Custom integration for real-time reading of inverter values
 
-# SH6K-BYD-Inverter
-
-https://my.home-assistant.io/badges/hacs_repository.svg](https://my.home-assistant.io/redirect/hacs_repository/?owner=lzzsalvo&repository=SH6K-BYD-Inverter&category=integration)
-
-Custom integration for real-time reading of inverter values.
 
 ## Installation
 
