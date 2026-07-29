@@ -1,14 +1,14 @@
-"""Constants for BYD SH6K Passive Modbus integration."""
-
+"""Constants for BYD SH6K Passive Modbus."""
 DOMAIN = "byd_sh6k_passive"
 PLATFORMS = ["sensor"]
 
+CONF_NAME = "name"
 CONF_HOST = "host"
 CONF_PORT = "port"
-CONF_NAME = "name"
 CONF_PUBLISH_INTERVAL = "publish_interval"
 CONF_RECONNECT_DELAY = "reconnect_delay"
 CONF_DEBUG_SENSOR = "debug_sensor"
+CONF_CREATE_DEPRECATED_CLEANUP = "create_deprecated_cleanup"
 
 DEFAULT_NAME = "BYD Power-Box SH6K"
 DEFAULT_HOST = "192.168.1.240"
@@ -16,6 +16,7 @@ DEFAULT_PORT = 502
 DEFAULT_PUBLISH_INTERVAL = 5
 DEFAULT_RECONNECT_DELAY = 10
 DEFAULT_DEBUG_SENSOR = True
+DEFAULT_CREATE_DEPRECATED_CLEANUP = True
 
 STORE_VERSION = 1
-STORE_KEY = "byd_sh6k_passive"
+STORE_KEY_PREFIX = "byd_sh6k_passive"

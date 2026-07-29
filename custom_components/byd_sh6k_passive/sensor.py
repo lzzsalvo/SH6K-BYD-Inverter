@@ -1,40 +1,16 @@
-"""Sensors for BYD SH6K Passive Modbus integration."""
+"""Sensors for BYD SH6K Passive Modbus."""
 from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, UnitOfElectricCurrent, UnitOfElectricPotential, UnitOfEnergy, UnitOfPower
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import CONF_NAME, DEFAULT_NAME, DOMAIN
 from .parser import DEBUG_KEY, SENSOR_DESCRIPTIONS, BydPassiveClient
-
-DEVICE_CLASS_MAP = {
-    "battery": SensorDeviceClass.BATTERY,
-    "voltage": SensorDeviceClass.VOLTAGE,
-    "current": SensorDeviceClass.CURRENT,
-    "power": SensorDeviceClass.POWER,
-    "energy": SensorDeviceClass.ENERGY,
-}
-
-STATE_CLASS_MAP = {
-    "measurement": SensorStateClass.MEASUREMENT,
-    "total_increasing": SensorStateClass.TOTAL_INCREASING,
-}
-
-UNIT_MAP = {
-    "%": PERCENTAGE,
-    "V": UnitOfElectricPotential.VOLT,
-    "A": UnitOfElectricCurrent.AMPERE,
-    "W": UnitOfPower.WATT,
-    "kWh": UnitOfEnergy.KILO_WATT_HOUR,
-    "Ah": "Ah",
-}
-
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     """Set up BYD SH6K sensors."""
@@ -43,7 +19,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     if client.debug_enabled:
         entities.append(BydDebugSensor(client, entry))
     async_add_entities(entities)
-
 
 class BydBaseSensor(SensorEntity):
     """Base BYD sensor."""
@@ -67,6 +42,7 @@ class BydBaseSensor(SensorEntity):
     async def async_will_remove_from_hass(self) -> None:
         if self._remove_listener:
             self._remove_listener()
+            self._remove_listener = None
 
     @callback
     def _handle_update(self) -> None:
@@ -76,32 +52,28 @@ class BydBaseSensor(SensorEntity):
     def available(self) -> bool:
         return self.client.connected or self.native_value is not None
 
-
 class BydSensor(BydBaseSensor):
-    """BYD numeric sensor."""
+    """BYD parsed sensor."""
 
     def __init__(self, client: BydPassiveClient, entry: ConfigEntry, key: str, desc: dict[str, Any]) -> None:
         super().__init__(client, entry)
         self.key = key
         self.desc = desc
         self._attr_unique_id = f"{entry.entry_id}_{key}"
-        self._attr_translation_key = key
         self._attr_name = f"BYD {desc['name']}"
-        self._attr_native_unit_of_measurement = UNIT_MAP.get(desc.get("unit"), desc.get("unit"))
-        if desc.get("device_class"):
-            self._attr_device_class = DEVICE_CLASS_MAP.get(desc["device_class"])
-        if desc.get("state_class"):
-            self._attr_state_class = STATE_CLASS_MAP.get(desc["state_class"])
-        if desc.get("icon"):
-            self._attr_icon = desc["icon"]
+        self._attr_native_unit_of_measurement = desc.get("unit")
+        self._attr_device_class = desc.get("device_class")
+        self._attr_state_class = desc.get("state_class")
+        self._attr_icon = desc.get("icon")
+        if desc.get("entity_category") == "diagnostic":
+            self._attr_entity_category = EntityCategory.DIAGNOSTIC
 
     @property
     def native_value(self) -> Any:
         return self.client.states.get(self.key)
 
-
 class BydDebugSensor(BydBaseSensor):
-    """Diagnostic JSON-like sensor for observed registers."""
+    """Diagnostic sensor with observed registers and raw data."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_icon = "mdi:code-json"
