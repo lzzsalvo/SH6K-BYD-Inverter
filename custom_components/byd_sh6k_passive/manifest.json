@@ -1,12 +1,14 @@
 {
   "domain": "byd_sh6k_passive",
-  "name": "BYD SH6K Passive Modbus",
+  "name": "BYD SH6K Passive",
   "codeowners": [
     "@lzzsalvo"
   ],
-  "config_flow": true,
+  "version": "1.0.2",
   "documentation": "https://github.com/lzzsalvo/SH6K-BYD-Inverter",
-  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/lzzsalvo/SH6K-BYD-Inverter/issues",
   "requirements": [],
-  "version": "1.1.0"
+  "config_flow": true,
+  "integration_type": "hub",
+  "iot_class": "local_polling"
 }
