@@ -1,0 +1,41 @@
+{
+  "title": "BYD SH6K Passive Modbus",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configura BYD SH6K Passive Modbus",
+        "description": "Ascolta passivamente il flusso Modbus RTU over TCP del convertitore RS485/TCP e crea sensori nativi Home Assistant.",
+        "data": {
+          "name": "Nome dispositivo",
+          "host": "Host/IP convertitore RS485 TCP",
+          "port": "Porta TCP",
+          "publish_interval": "Intervallo aggiornamento sensori (secondi)",
+          "reconnect_delay": "Ritardo riconnessione (secondi)",
+          "debug_sensor": "Crea sensore diagnostico registri osservati"
+        },
+        "data_description": {
+          "host": "Esempio: 192.168.1.240",
+          "port": "Di solito 502 per RTU over TCP.",
+          "publish_interval": "Non interroga i registri, limita solo gli aggiornamenti verso Home Assistant.",
+          "reconnect_delay": "Attesa prima di riconnettersi se il socket TCP cade.",
+          "debug_sensor": "Utile per vedere registri osservati, valori raw e stato del buffer. Puoi disattivarlo dopo il collaudo."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opzioni BYD SH6K Passive Modbus",
+        "description": "Modifica connessione e tempi. L'integrazione verra ricaricata automaticamente.",
+        "data": {
+          "host": "Host/IP convertitore RS485 TCP",
+          "port": "Porta TCP",
+          "publish_interval": "Intervallo aggiornamento sensori (secondi)",
+          "reconnect_delay": "Ritardo riconnessione (secondi)",
+          "debug_sensor": "Crea sensore diagnostico registri osservati"
+        }
+      }
+    }
+  }
+}
