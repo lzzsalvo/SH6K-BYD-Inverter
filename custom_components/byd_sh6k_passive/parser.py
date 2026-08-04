@@ -208,7 +208,7 @@ class BydPassiveClient:
 
     async def async_start(self) -> None:
         self._stopping = False
-        self._task = self.hass.async_create_task(self._run())
+        self._task = asyncio.create_task(self._run())
 
     async def async_stop(self) -> None:
         self._stopping = True
@@ -231,25 +231,52 @@ class BydPassiveClient:
             listener()
 
     async def _run(self) -> None:
+        _LOGGER.warning("BYD PASSIVE CLIENT STARTED")
+
         while not self._stopping:
             writer = None
             try:
                 _LOGGER.info("Connecting to BYD passive stream %s:%s", self.host, self.port)
-                reader, writer = await asyncio.open_connection(self.host, self.port)
+
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection(self.host, self.port),
+                    timeout=10,
+                )
+
+                _LOGGER.warning(
+                    "BYD PASSIVE CONNECTED TO %s:%s",
+                    self.host,
+                    self.port,
+                )
+
                 self.connected = True
                 self._notify()
+
                 while not self._stopping:
                     data = await reader.read(1024)
                     if not data:
                         raise ConnectionError("TCP stream closed")
                     self._feed(data)
+
             except asyncio.CancelledError:
                 raise
+
+            except TimeoutError:
+                self.connected = False
+                self._notify()
+                _LOGGER.warning(
+                    "BYD SH6K passive connection timeout (%s:%s)",
+                    self.host,
+                    self.port,
+                )
+                await asyncio.sleep(self.reconnect_delay)
+
             except Exception as err:
                 self.connected = False
                 self._notify()
                 _LOGGER.warning("BYD SH6K passive stream error: %s", err)
                 await asyncio.sleep(self.reconnect_delay)
+
             finally:
                 if writer:
                     writer.close()
