@@ -20,5 +20,10 @@ Category: Integration
 
 ## Connection example
 
+Connect the converter to the Parallel port at pin 1 and 2
+Configure the converter with IP address and communication port
+
+KALEA-INFORMATIQUE Adattatore convertitore da RS485 a Ethernet, punto di accesso 10/100 per connessione seriale RS-485. Supporta TCP, RTU, UDP e LAN
+
 ![Adapter](https://github.com/lzzsalvo/SH6K-BYD-Inverter/blob/main/images/AdapterRS485toEthernet.png)
 ![BYDConnector](https://github.com/lzzsalvo/SH6K-BYD-Inverter/blob/main/images/byd-connetctor.png)
