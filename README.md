@@ -4,7 +4,7 @@ Custom integration for real-time reading of inverter values.
 
 ## Dashboard Example
 
-![Dashboard](https://raw.githubusercontent.com/lzzsalvoerter/main/images/dashboard.png
+![Dashboard](https://raw.githubusercontent.com/lzzsalvo/SH6K-Bain/images/dashboard.png)
 
 ## Installation
 
