@@ -65,6 +65,9 @@ REGISTER_MAP: dict[str, RegisterConfig | list[RegisterConfig]] = {
     "144_3_57399": RegisterConfig("data_ora_giorno"),
     "144_3_57400": RegisterConfig("data_ora_ora"),
     "144_3_57401": RegisterConfig("data_ora_minuto"),
+    "144_3_24719": RegisterConfig("giorno_installazione"),
+    "144_3_24718": RegisterConfig("mese_installazione"),
+    "144_3_24717": RegisterConfig("anno_installazione"),
 
     # Inverter / Meter - slave 1, FC4
     "1_4_2048": RegisterConfig("assorbimento_rete", 1, True, 0),
@@ -148,6 +151,9 @@ SENSOR_DESCRIPTIONS: dict[str, dict[str, Any]] = {
     "data_ora_giorno": {"name": "Data Ora Giorno", "entity_category": "diagnostic"},
     "data_ora_ora": {"name": "Data Ora Ora", "entity_category": "diagnostic"},
     "data_ora_minuto": {"name": "Data Ora Minuto", "entity_category": "diagnostic"},
+    "giorno_installazione": {"name": "Giorno Installazione", "entity_category": "diagnostic"},
+    "mese_installazione": {"name": "Mese Installazione", "entity_category": "diagnostic"},
+    "anno_installazione": {"name": "Anno Installazione", "entity_category": "diagnostic"},
     "bus_dc_candidato": {"name": "Bus DC Candidato", "unit": "V", "device_class": "voltage", "state_class": "measurement", "entity_category": "diagnostic"},
     "temperatura_inverter_1": {"name": "Temperatura Inverter 1", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
     "temperatura_inverter_2": {"name": "Temperatura Inverter 2", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
