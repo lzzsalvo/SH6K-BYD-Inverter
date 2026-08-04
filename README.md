@@ -4,7 +4,7 @@ Custom integration for real-time reading of inverter values.
 
 ## Dashboard Example
 
-![Dashboard](https://github.com/lzzsalvo/SH6K-BYD-Inverter/main/images/dashboard.png)
+![Dashboard](https://github.com/lzzsalvo/SH6K-BYD-Inverter/blob/main/images/dashboard.png)
 
 ## Installation
 
