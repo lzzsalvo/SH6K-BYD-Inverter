@@ -1,5 +1,8 @@
 # SH6K-BYD-Inverter
-Custom integration for real-time reading of inverter values
+
+Custom integration for real-time reading of inverter values.
+
+https://raw.githubusercontent.com/lzzsalvo/SH6K-BYD-Inverter/main/images/dashboard.png
 
 ## Installation
 
@@ -17,9 +20,11 @@ Category: Integration
 5. Install BYD SH6K Passive
 6. Restart Home Assistant
 
-<img width="1328" height="837" alt="1" src="https://github.com/user-attachments/assets/2f485044-673a-4d41-bdd6-43a77f3cd736" />
-## Screenshot
-2
- 
-3
-https://raw.githubusercontent.com/lzzsalvo/SH6K-BYD-Inverter/main/images/dashboard.png
+## Features
+
+- Passive Modbus capture
+- Real-time inverter monitoring
+- Battery diagnostics
+- Grid import/export monitoring
+- PV production monitoring
+- Home Assistant native entities
