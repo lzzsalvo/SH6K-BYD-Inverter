@@ -22,4 +22,4 @@ Category: Integration
 2
  
 3
-!ttps://raw.githubusercontent.com/lzzsalvo/SH6K-BYD-Inverter/main/images/dashboard.png
+https://raw.githubusercontent.com/lzzsalvo/SH6K-BYD-Inverter/main/images/dashboard.png
