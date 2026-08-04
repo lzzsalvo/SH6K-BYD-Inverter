@@ -20,5 +20,5 @@ Category: Integration
 
 ## Connection example
 
-![Adapter](https://github.com/lzzsalvo/SH6K-BYD-Inverter/blob/main/images/Adapter RS485toEthernet.png)
+![Adapter](https://github.com/lzzsalvo/SH6K-BYD-Inverter/blob/main/images/AdapterRS485toEthernet.png)
 ![BYDConnector](https://github.com/lzzsalvo/SH6K-BYD-Inverter/blob/main/images/byd-connetctor.png)
