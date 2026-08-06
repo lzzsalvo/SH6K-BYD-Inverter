@@ -142,14 +142,14 @@ SENSOR_DESCRIPTIONS: dict[str, dict[str, Any]] = {
     "potenza_nominale": {"name": "Potenza Nominale", "unit": "W", "device_class": "power", "entity_category": "diagnostic"},
     "stringa_versione_interna": {"name": "Stringa Versione Interna", "entity_category": "diagnostic"},
     "numero_serie": {"name": "Numero di Serie", "entity_category": "diagnostic"},
-    "anno": {"name": "Anno", "entity_category": "diagnostic"},
-    "mese": {"name": "Mese", "entity_category": "diagnostic"},
-    "giorno": {"name": "Giorno", "entity_category": "diagnostic"},
+#    "anno": {"name": "Anno", "entity_category": "diagnostic"},
+#    "mese": {"name": "Mese", "entity_category": "diagnostic"},
+#    "giorno": {"name": "Giorno", "entity_category": "diagnostic"},
     "ora": {"name": "Ora", "entity_category": "diagnostic"},
     "minuto": {"name": "Minuto", "entity_category": "diagnostic"},
-    "giorno_installazione": {"name": "Giorno Installazione", "entity_category": "diagnostic"},
-    "mese_installazione": {"name": "Mese Installazione", "entity_category": "diagnostic"},
-    "anno_installazione": {"name": "Anno Installazione", "entity_category": "diagnostic"},
+#    "giorno_installazione": {"name": "Giorno Installazione", "entity_category": "diagnostic"},
+#    "mese_installazione": {"name": "Mese Installazione", "entity_category": "diagnostic"},
+#    "anno_installazione": {"name": "Anno Installazione", "entity_category": "diagnostic"},
     "bus_dc_candidato": {"name": "Bus DC Candidato", "unit": "V", "device_class": "voltage", "state_class": "measurement", "entity_category": "diagnostic"},
     "temperatura_inverter_1": {"name": "Temperatura Inverter 1", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
     "temperatura_inverter_2": {"name": "Temperatura Inverter 2", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
@@ -159,6 +159,8 @@ SENSOR_DESCRIPTIONS: dict[str, dict[str, Any]] = {
     "temperatura_bms_3": {"name": "Temperatura BMS 3", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
     "temperatura_bms_4": {"name": "Temperatura BMS 4", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
     "data_installazione": {"name": "Data Installazione", "entity_category": "diagnostic", "icon": "mdi:calendar"},
+    "data_attuale": {"name": "Data Attuale", "entity_category": "diagnostic", "icon": "mdi:calendar"},
+    "ora_attuale": {"name": "Ora Attuale", "entity_category": "diagnostic", "icon": "mdi:clock"},
 }
 
 DEPRECATED_KEYS = {"tensione_rete", "battery_enable_flag", "battery_enable_flag_raw"}
@@ -351,6 +353,24 @@ class BydPassiveClient:
                         f"{int(giorno):02d}/{int(mese):02d}/{int(anno):04d}"
                     )
 
+                # Costruzione data attuale inverter
+                annoatt = self.states.get("anno")
+                meseatt = self.states.get("mese")
+                giornoatt = self.states.get("giorno")
+                if annoatt and meseatt and giornoatt:
+                    self.states["data_attuale"] = (
+                        f"{int(giornoatt):02d}/{int(meseatt):02d}/{int(annoatt):04d}"
+                    )    
+
+                # Costruzione ora attuale inverter
+                ora = self.states.get("ora")
+                minuto = self.states.get("minuto")
+                if ora and minuto:
+                    self.states["ora_attuale"] = (
+                        f"{int(ora):02d}:{int(minuto):02d}"
+                    )    
+
+    
     def _update_energy(self, key: str, value: Any) -> None:
         if not isinstance(value, (int, float)):
             return
