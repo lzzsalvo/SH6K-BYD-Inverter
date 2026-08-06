@@ -341,6 +341,14 @@ class BydPassiveClient:
                     value = 0 if abs(value) < 10 else value                    
                 self.states[cfg.key] = value
                 self._update_energy(cfg.key, value)
+                # Costruzione data installazione
+                anno = self.states.get("anno_installazione")
+                mese = self.states.get("mese_installazione")
+                giorno = self.states.get("giorno_installazione")
+                if anno and mese and giorno:
+                    self.states["data_installazione"] = (
+                        f"{int(giorno):02d}/{int(mese):02d}/{int(anno):04d}"
+                    )
 
     def _update_energy(self, key: str, value: Any) -> None:
         if not isinstance(value, (int, float)):
