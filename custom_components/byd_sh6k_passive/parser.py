@@ -336,6 +336,9 @@ class BydPassiveClient:
                 value = decode_by_config(cfg, raw_unsigned, raw_signed, data_part, idx)
                 if value in (None, ""):
                     continue
+                # Elimina il rumore vicino allo zero
+                if cfg.key == "assorbimento_rete" and isinstance(value, (int, float)):
+                    value = 0 if abs(value) < 10 else value                    
                 self.states[cfg.key] = value
                 self._update_energy(cfg.key, value)
 
