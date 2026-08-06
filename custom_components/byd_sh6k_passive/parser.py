@@ -158,6 +158,7 @@ SENSOR_DESCRIPTIONS: dict[str, dict[str, Any]] = {
     "temperatura_bms_2": {"name": "Temperatura BMS 2", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
     "temperatura_bms_3": {"name": "Temperatura BMS 3", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
     "temperatura_bms_4": {"name": "Temperatura BMS 4", "unit": "°C", "device_class": "temperature", "state_class": "measurement", "entity_category": "diagnostic"},
+    "data_installazione": {"name": "Data Installazione", "entity_category": "diagnostic", "icon": "mdi:calendar"},
 }
 
 DEPRECATED_KEYS = {"tensione_rete", "battery_enable_flag", "battery_enable_flag_raw"}
