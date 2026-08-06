@@ -6,19 +6,66 @@ from typing import Any
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import CONF_NAME, DEFAULT_NAME, DOMAIN
 from .parser import DEBUG_KEY, SENSOR_DESCRIPTIONS, BydPassiveClient
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
+
+def cleanup_obsolete_entities(hass: HomeAssistant, entry: ConfigEntry, client: BydPassiveClient) -> None:
+    """Remove obsolete BYD SH6K sensor entities from the entity registry."""
+    entity_registry = er.async_get(hass)
+
+    valid_unique_ids = {f"{entry.entry_id}_{key}" for key in SENSOR_DESCRIPTIONS}
+
+    if client.debug_enabled:
+        valid_unique_ids.add(f"{entry.entry_id}_{DEBUG_KEY}")
+
+    removed = 0
+
+    for entity_entry in list(entity_registry.entities.values()):
+        if entity_entry.config_entry_id != entry.entry_id:
+            continue
+
+        if entity_entry.domain != "sensor":
+            continue
+
+        if entity_entry.unique_id in valid_unique_ids:
+            continue
+
+        entity_registry.async_remove(entity_entry.entity_id)
+        removed += 1
+
+    if removed:
+        client.hass.loop.call_soon(
+            client.hass.bus.async_fire,
+            "byd_sh6k_passive_obsolete_entities_removed",
+            {"removed": removed},
+        )
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
     """Set up BYD SH6K sensors."""
     client: BydPassiveClient = hass.data[DOMAIN][entry.entry_id]
-    entities: list[SensorEntity] = [BydSensor(client, entry, key, desc) for key, desc in SENSOR_DESCRIPTIONS.items()]
+
+    cleanup_obsolete_entities(hass, entry, client)
+
+    entities: list[SensorEntity] = [
+        BydSensor(client, entry, key, desc)
+        for key, desc in SENSOR_DESCRIPTIONS.items()
+    ]
+
     if client.debug_enabled:
         entities.append(BydDebugSensor(client, entry))
+
     async_add_entities(entities)
+
 
 class BydBaseSensor(SensorEntity):
     """Base BYD sensor."""
@@ -52,10 +99,17 @@ class BydBaseSensor(SensorEntity):
     def available(self) -> bool:
         return self.client.connected or self.native_value is not None
 
+
 class BydSensor(BydBaseSensor):
     """BYD parsed sensor."""
 
-    def __init__(self, client: BydPassiveClient, entry: ConfigEntry, key: str, desc: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        client: BydPassiveClient,
+        entry: ConfigEntry,
+        key: str,
+        desc: dict[str, Any],
+    ) -> None:
         super().__init__(client, entry)
         self.key = key
         self.desc = desc
@@ -71,6 +125,7 @@ class BydSensor(BydBaseSensor):
     @property
     def native_value(self) -> Any:
         return self.client.states.get(self.key)
+
 
 class BydDebugSensor(BydBaseSensor):
     """Diagnostic sensor with observed registers and raw data."""
