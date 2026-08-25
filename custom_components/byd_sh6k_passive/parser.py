@@ -180,6 +180,7 @@ class BydPassiveClient:
         self.last_req = persisted.get("last_req", {})
         self.states = {k: v for k, v in persisted.get("states", {}).items() if k not in DEPRECATED_KEYS}
         self.raw_registers = persisted.get("raw_registers", {})
+        self.raw_power_values = persisted.get("raw_power_values", {})
         self.observed = persisted.get("observed", {})
         self.daily_energy = persisted.get("daily_energy", {})
         self.last_publish = 0.0
@@ -342,8 +343,19 @@ class BydPassiveClient:
                 # Elimina il rumore vicino allo zero
                 if cfg.key == "assorbimento_rete" and isinstance(value, (int, float)):
                     value = 0 if abs(value) < 10 else value                    
-                self.states[cfg.key] = value
-                self._update_energy(cfg.key, value)
+                # Conserva separatamente i valori grezzi usati per le correzioni.
+                if cfg.key in {
+                    "potenza_batteria",
+                    "potenza_ad_isola",
+                    "potenza_pannelli",
+                    "assorbimento_casa",
+                }:
+                    self.raw_power_values[cfg.key] = value
+                else:
+                    self.states[cfg.key] = value
+
+                self._update_corrected_power_states()
+                self._update_energy(cfg.key, self.states.get(cfg.key, value))
                 # Costruzione data installazione
                 anno = self.states.get("anno_installazione")
                 mese = self.states.get("mese_installazione")
@@ -371,6 +383,49 @@ class BydPassiveClient:
                     )    
 
     
+    def _update_corrected_power_states(self) -> None:
+        """Aggiorna potenza batteria e assorbimento casa con i fallback EPS."""
+        batt = float(
+            self.raw_power_values.get(
+                "potenza_batteria", self.states.get("potenza_batteria", 0)
+            )
+            or 0
+        )
+        isola = float(
+            self.raw_power_values.get(
+                "potenza_ad_isola", self.states.get("potenza_ad_isola", 0)
+            )
+            or 0
+        )
+        pv = float(
+            self.raw_power_values.get(
+                "potenza_pannelli", self.states.get("potenza_pannelli", 0)
+            )
+            or 0
+        )
+        casa = float(
+            self.raw_power_values.get(
+                "assorbimento_casa", self.states.get("assorbimento_casa", 0)
+            )
+            or 0
+        )
+
+        # Potenza batteria: valore Modbus, oppure potenza ad isola quando FV = 0.
+        if batt != 0:
+            potenza_batteria = batt
+        elif pv == 0:
+            potenza_batteria = isola
+        else:
+            potenza_batteria = 0
+
+        # Assorbimento casa: in assenza di batteria e FV usa la potenza ad isola.
+        assorbimento_casa = isola if batt == 0 and pv == 0 else casa
+
+        self.states["potenza_batteria"] = potenza_batteria
+        self.states["assorbimento_casa"] = assorbimento_casa
+        self.states["potenza_pannelli"] = pv
+        self.states["potenza_ad_isola"] = isola
+
     def _update_energy(self, key: str, value: Any) -> None:
         if not isinstance(value, (int, float)):
             return
@@ -403,7 +458,7 @@ class BydPassiveClient:
         return round(float(item["kwh"]), 3)
 
     async def _async_store(self) -> None:
-        await self.store.async_save({"states": self.states, "raw_registers": self.raw_registers, "observed": self.observed, "daily_energy": self.daily_energy, "last_req": self.last_req})
+        await self.store.async_save({"states": self.states, "raw_registers": self.raw_registers, "raw_power_values": self.raw_power_values, "observed": self.observed, "daily_energy": self.daily_energy, "last_req": self.last_req})
 
     def debug_state(self) -> dict[str, Any]:
         return {"connected": self.connected, "host": self.host, "port": self.port, "observed": self.observed, "raw_registers": self.raw_registers, "states": self.states, "daily_energy": self.daily_energy, "buffer_length": len(self.buffer), "last_publish": datetime.now().isoformat()}
