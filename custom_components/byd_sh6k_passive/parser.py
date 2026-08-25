@@ -410,16 +410,18 @@ class BydPassiveClient:
             or 0
         )
 
-        # Potenza batteria: valore Modbus, oppure potenza ad isola quando FV = 0.
-        if batt != 0:
-            potenza_batteria = batt
-        elif pv == 0:
+        # Correzione del registro batteria sotto soglia.
+        # Usa la potenza ad isola solo quando batteria e FV sono entrambi a zero
+        # e il registro della potenza ad isola contiene effettivamente un valore.
+        potenza_batteria = batt
+        if batt == 0 and pv == 0 and isola != 0:
             potenza_batteria = isola
-        else:
-            potenza_batteria = 0
 
-        # Assorbimento casa: in assenza di batteria e FV usa la potenza ad isola.
-        assorbimento_casa = isola if batt == 0 and pv == 0 else casa
+        # Correzione dell'assorbimento casa sotto soglia.
+        # Se potenza ad isola e zero, conserva il valore originale della casa.
+        assorbimento_casa = casa
+        if batt == 0 and pv == 0 and isola != 0:
+            assorbimento_casa = isola
 
         self.states["potenza_batteria"] = potenza_batteria
         self.states["assorbimento_casa"] = assorbimento_casa
