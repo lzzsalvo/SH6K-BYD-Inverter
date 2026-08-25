@@ -414,20 +414,24 @@ class BydPassiveClient:
         potenza_batteria = batt
         potenza_pannelli = pv
         assorbimento_casa = casa
+        stato = self.states.get("stato_inverter")
 
-        # Caso 1: FV e batteria risultano a zero, ma la potenza ad isola e positiva.
-        # In questa condizione la potenza ad isola e erogata dalla batteria
-        # e alimenta la casa.
-        if batt == 0 and pv == 0 and isola > 0:
-            potenza_batteria = isola
-            assorbimento_casa = isola
+        # Applica le correzioni solo in modalità EPS.
+        if stato == "Eps":
 
-        # Caso 2: batteria in carica da FV e assorbimento casa non rilevato.
-        # Il registro pannelli contiene soltanto la quota usata per caricare
-        # la batteria; la potenza ad isola rappresenta la quota destinata alla casa.
-        elif batt < 0 and pv > 0 and casa == 0 and isola > 0:
-            potenza_pannelli = pv + isola
-            assorbimento_casa = isola
+            # Caso 1: FV e batteria risultano a zero, ma la potenza ad isola e positiva.
+            # In questa condizione la potenza ad isola e erogata dalla batteria
+            # e alimenta la casa.
+            if batt == 0 and pv == 0 and isola > 0:
+                potenza_batteria = isola
+                assorbimento_casa = isola
+
+            # Caso 2: batteria in carica da FV e assorbimento casa non rilevato.
+            # Il registro pannelli contiene soltanto la quota usata per caricare
+            # la batteria; la potenza ad isola rappresenta la quota destinata alla casa.
+            elif batt < 0 and pv > 0 and casa == 0 and isola > 0:
+                potenza_pannelli = pv + isola
+                assorbimento_casa = isola
 
         self.states["potenza_batteria"] = potenza_batteria
         self.states["assorbimento_casa"] = assorbimento_casa
