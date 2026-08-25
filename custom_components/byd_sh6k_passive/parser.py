@@ -410,22 +410,28 @@ class BydPassiveClient:
             or 0
         )
 
-        # Correzione del registro batteria sotto soglia.
-        # Usa la potenza ad isola solo quando batteria e FV sono entrambi a zero
-        # e il registro della potenza ad isola contiene effettivamente un valore.
+        # Mantiene separati i valori Modbus grezzi da quelli corretti.
         potenza_batteria = batt
-        if batt == 0 and pv == 0 and isola != 0:
-            potenza_batteria = isola
-
-        # Correzione dell'assorbimento casa sotto soglia.
-        # Se potenza ad isola e zero, conserva il valore originale della casa.
+        potenza_pannelli = pv
         assorbimento_casa = casa
-        if batt == 0 and pv == 0 and isola != 0:
+
+        # Caso 1: FV e batteria risultano a zero, ma la potenza ad isola e positiva.
+        # In questa condizione la potenza ad isola e erogata dalla batteria
+        # e alimenta la casa.
+        if batt == 0 and pv == 0 and isola > 0:
+            potenza_batteria = isola
+            assorbimento_casa = isola
+
+        # Caso 2: batteria in carica da FV e assorbimento casa non rilevato.
+        # Il registro pannelli contiene soltanto la quota usata per caricare
+        # la batteria; la potenza ad isola rappresenta la quota destinata alla casa.
+        elif batt < 0 and pv > 0 and casa == 0 and isola > 0:
+            potenza_pannelli = pv + isola
             assorbimento_casa = isola
 
         self.states["potenza_batteria"] = potenza_batteria
         self.states["assorbimento_casa"] = assorbimento_casa
-        self.states["potenza_pannelli"] = pv
+        self.states["potenza_pannelli"] = potenza_pannelli
         self.states["potenza_ad_isola"] = isola
 
     def _update_energy(self, key: str, value: Any) -> None:
