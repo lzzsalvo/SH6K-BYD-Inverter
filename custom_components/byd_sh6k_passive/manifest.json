@@ -4,7 +4,7 @@
   "codeowners": [
     "@lzzsalvo"
   ],
-  "version": "1.1.5",
+  "version": "1.1.6",
   "documentation": "https://github.com/lzzsalvo/SH6K-BYD-Inverter",
   "issue_tracker": "https://github.com/lzzsalvo/SH6K-BYD-Inverter/issues",
   "requirements": [],
